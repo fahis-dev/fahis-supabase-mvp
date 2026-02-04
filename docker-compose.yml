@@ -62,10 +62,6 @@ services:
       SNIPPETS_MANAGEMENT_FOLDER: /app/snippets
       EDGE_FUNCTIONS_MANAGEMENT_FOLDER: /app/edge-functions
     volumes:
-      - type: bind
-        source: ./volumes/storage
-        target: /var/lib/storage
-        is_directory: true
       - ./volumes/snippets:/app/snippets:Z
       - ./volumes/functions:/app/edge-functions:Z
 
@@ -468,8 +464,14 @@ services:
     image: timberio/vector:0.28.1-alpine
     restart: unless-stopped
     volumes:
-      - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
-      - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
+      - type: bind
+        source: ./volumes/logs/vector.yml
+        target: /etc/vector/vector.yml
+        read_only: true
+      - type: bind
+        source: ${DOCKER_SOCKET_LOCATION}
+        target: /var/run/docker.sock
+        read_only: true
     healthcheck:
       test:
         [
