@@ -69,9 +69,13 @@ services:
     container_name: supabase-kong
     image: kong:2.8.1
     restart: unless-stopped
-    ports:
-      - ${KONG_HTTP_PORT}:8000/tcp
-      - ${KONG_HTTPS_PORT}:8443/tcp
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.supabase.rule=Host(`fahismvp.supabase.azyan.cloud`)"
+      - "traefik.http.routers.supabase.entrypoints=http"
+    #ports:
+      #- ${KONG_HTTP_PORT}:8000/tcp
+      #- ${KONG_HTTPS_PORT}:8443/tcp
     volumes:
       # https://github.com/supabase/supabase/issues/12661
       - ./volumes/api/kong.yml:/home/kong/temp.yml:ro,z
@@ -242,7 +246,7 @@ services:
   # To use S3 backed storage: docker compose -f docker-compose.yml -f docker-compose.s3.yml up
   storage:
     container_name: supabase-storage
-    image: supabase/storage-api:v1.37.1
+    image: supabase/storage-api:v1.33.5
     restart: unless-stopped
     volumes:
       - ./volumes/storage:/var/lib/storage:z
